@@ -1,0 +1,61 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:guildlite}
+    username: ${DB_USERNAME:guildlite_user}
+    password: ${DB_PASSWORD:guildlite_pass}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+
+guildlite:
+  jwt:
+    secret: ${JWT_SECRET:6XeifkhBdfwV60hPvNtcwGRqJcg0FVJXuzu1YkpMKcCP6i8Gk9DrVC2ALGJkTpiqvfkpp07S2pvZwucFSrQc7mHfJtBH1n7gjjUCFBJ4DX6aN09Z4iztVrJJSRNJhSJ6}
+    expiration-hours: ${JWT_EXPIRATION_HOURS:3}
+
+
+logging:
+  level:
+    com.guildlite: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/guildlite.log
+
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: never

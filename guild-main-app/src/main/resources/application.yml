@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: guildlite
+
+
+guildlite:
+  jwt:
+    secret: XErm0iLuNStxwW4GqhF20bMUjw97whYjUcmTkWDfQiVRRRU9b6jX1dju3vkmq6Bcpw5F9jjKAMp5cNPm89tAeeBFQQFR0t7LZjXc4wS0nKUUPKME4vF4VFMu97j49BBP
+    expiration-hours: 24
+
+
+logging:
+  level:
+    com.guildlite: INFO
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized

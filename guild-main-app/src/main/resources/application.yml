@@ -11,10 +11,6 @@ guildlite:
     expiration-hours: 24
 
 
-logging:
-  level:
-    com.guildlite: INFO
-
 
 server:
   port: 8080

@@ -27,6 +27,7 @@
         <module>guild-main-app</module>
         <module>user-module</module>
         <module>team-module</module>
+        <module>coin-module</module>
     </modules>
 
     <repositories>
@@ -67,11 +68,11 @@
                 <artifactId>team-module</artifactId>
                 <version>${project.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.guildlite</groupId>-->
-<!--                <artifactId>coin-module</artifactId>-->
-<!--                <version>${project.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>com.guildlite</groupId>
+                <artifactId>coin-module</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 <!--            <dependency>-->
 <!--                <groupId>com.guildlite</groupId>-->
 <!--                <artifactId>chat-module</artifactId>-->

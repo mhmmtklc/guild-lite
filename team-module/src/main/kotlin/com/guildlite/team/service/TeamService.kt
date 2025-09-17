@@ -1,5 +1,6 @@
 package com.guildlite.team.service
 
+import com.guildlite.coin.service.CoinService
 import com.guildlite.security.dto.UserPrincipal
 import com.guildlite.security.provider.JwtTokenProvider
 import com.guildlite.team.dto.request.CreateTeamRequest
@@ -25,6 +26,7 @@ class TeamService(
     private val teamRepository: TeamRepository,
     private val teamUserRepository: TeamUserRepository,
     private val userRepository: UserRepository,
+    private val coinService: CoinService,
     private val jwtTokenProvider: JwtTokenProvider
 ) {
 
@@ -55,6 +57,8 @@ class TeamService(
         )
 
         team = teamRepository.save(team)
+
+        coinService.initializeCoinPool(team)
 
         val teamUser = TeamUserEntity(
             team = team,
@@ -139,8 +143,10 @@ class TeamService(
                     val promotedOwner = newOwner.copy(role = TeamUserEntity.TeamRole.OWNER)
                     teamUserRepository.save(promotedOwner)
 
-                    logger.info("User {} promoted to LEADER of team {} after owner {} left",
-                        newOwner.user.id, teamId, userId)
+                    logger.info(
+                        "User {} promoted to LEADER of team {} after owner {} left",
+                        newOwner.user.id, teamId, userId
+                    )
                 }
             }
         }
@@ -167,6 +173,7 @@ class TeamService(
                     .find { it.role == TeamUserEntity.TeamRole.OWNER }?.user?.username
                 "Successfully left team '$teamName'. Leadership transferred to $newOwnerName."
             }
+
             else -> "Successfully left team '$teamName'"
         }
 
@@ -180,13 +187,8 @@ class TeamService(
     }
 
 
-
-
-
-
     fun getTeam(teamId: UUID): TeamResponse {
         val team = findById(teamId)
-
         return mapToTeamResponse(team)
     }
 
@@ -216,7 +218,8 @@ class TeamService(
                     userId = teamUser.user.id!!,
                     username = teamUser.user.username,
                     role = teamUser.role,
-                    joinedAt = teamUser.joinedAt!!
+                    joinedAt = teamUser.joinedAt!!,
+                    addedCoinsCount = coinService.getTeamCoinsCountAddedByMember(teamUser.user.id!!, team.id!!)
                 )
             }
 
@@ -225,6 +228,7 @@ class TeamService(
             name = team.name,
             description = team.description,
             createdBy = team.createdBy,
+            teamCoinBalance = coinService.getTeamCoinBalance(team.id!!),
             currentMembersCount = memberCount,
             createdAt = team.createdAt,
             members = members

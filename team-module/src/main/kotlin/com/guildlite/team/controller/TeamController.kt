@@ -17,7 +17,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/teams")
-@SecurityRequirement(name = "Authorization")
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Team Management", description = "Team management processes controller")
 class TeamController(
     private val teamService: TeamService

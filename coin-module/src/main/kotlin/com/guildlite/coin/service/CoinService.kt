@@ -1,0 +1,109 @@
+package com.guildlite.coin.service
+
+import com.guildlite.coin.dto.request.AddCoinsRequest
+import com.guildlite.coin.dto.response.AddCoinsResponse
+import com.guildlite.coin.dto.response.CoinBalanceResponse
+import com.guildlite.coin.entity.CoinPoolEntity
+import com.guildlite.coin.entity.CoinTransactionEntity
+import com.guildlite.coin.repository.CoinPoolRepository
+import com.guildlite.coin.repository.CoinTransactionRepository
+import com.guildlite.team.entity.TeamEntity
+import com.guildlite.team.repository.TeamRepository
+import com.guildlite.user.repository.UserRepository
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
+
+@Service
+@Transactional(readOnly = true)
+class CoinService(
+    private val coinPoolRepository: CoinPoolRepository,
+    private val coinTransactionRepository: CoinTransactionRepository,
+    private val teamRepository: TeamRepository,
+    private val userRepository: UserRepository
+) {
+
+    private val logger = LoggerFactory.getLogger(CoinService::class.java)
+
+    @Transactional
+    fun addCoins(teamId: UUID, request: AddCoinsRequest, userId: UUID): AddCoinsResponse {
+        logger.info("Adding {} coins to team {} by user {}", request.amount, teamId, userId)
+
+        val team = findTeamById(teamId)
+        val user = findUserById(userId)
+
+        val coinPool = coinPoolRepository.findByTeamId(teamId)
+            ?: createCoinPool(team)
+
+        val oldBalance = coinPool.balance
+
+        coinPool.addCoins(request.amount)
+        coinPoolRepository.save(coinPool)
+
+        val transaction = CoinTransactionEntity(
+            coinPool = coinPool,
+            user = user,
+            amount = request.amount,
+            type = CoinTransactionEntity.TransactionType.ADD,
+            description = request.description
+        )
+        coinTransactionRepository.save(transaction)
+
+        logger.info("Added {} coins to team {}. Balance: {} -> {}",
+            request.amount, teamId, oldBalance, coinPool.balance)
+
+        return AddCoinsResponse(
+            success = true,
+            amountAdded = request.amount,
+            newBalance = coinPool.balance,
+            message = "Successfully added ${request.amount} coins to team pool"
+        )
+    }
+
+    fun getCoinBalance(teamId: UUID): CoinBalanceResponse {
+        val team = findTeamById(teamId)
+        val coinPool = coinPoolRepository.findByTeamId(teamId)
+
+        return CoinBalanceResponse(
+            teamId = teamId,
+            teamName = team.name,
+            balance = coinPool?.balance ?: 0L,
+            lastUpdated = coinPool?.updatedAt,
+            success = true,
+            message = "Successfully retrieved balance for team pool"
+        )
+    }
+
+    @Transactional
+    fun initializeCoinPool(team: TeamEntity): CoinPoolEntity {
+        logger.info("Initializing coin pool for team {}", team.id)
+
+        val coinPool = CoinPoolEntity(team = team)
+        return coinPoolRepository.save(coinPool)
+    }
+
+    private fun createCoinPool(team: TeamEntity): CoinPoolEntity {
+        logger.info("Creating new coin pool for team {}", team.id)
+        val coinPool = CoinPoolEntity(team = team)
+        return coinPoolRepository.save(coinPool)
+    }
+
+    private fun findTeamById(teamId: UUID): TeamEntity {
+        return teamRepository.findById(teamId)
+            .orElseThrow { NoSuchElementException("Team not found: $teamId") }
+    }
+
+    private fun findUserById(userId: UUID): com.guildlite.user.entity.UserEntity {
+        return userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("User not found: $userId") }
+    }
+
+    fun getTeamCoinBalance(teamId: UUID): Long {
+        return coinPoolRepository.getTeamCoinBalance(teamId) ?: 0L
+    }
+
+    fun getTeamCoinsCountAddedByMember(userId: UUID, teamId: UUID): Long {
+        return coinTransactionRepository.getTeamCoinCountAddedByMember(userId, teamId) ?: 0L
+    }
+}

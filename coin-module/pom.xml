@@ -12,9 +12,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>team-module</artifactId>
-    <name>GuildLite Team Module</name>
-    <description>Team management module</description>
+    <artifactId>coin-module</artifactId>
+    <name>GuildLite Coin Module</name>
+    <description>Coin management module</description>
 
     <packaging>jar</packaging>
 
@@ -29,8 +29,9 @@
         </dependency>
         <dependency>
             <groupId>com.guildlite</groupId>
-            <artifactId>coin-module</artifactId>
+            <artifactId>team-module</artifactId>
         </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,7 +68,6 @@
             <version>${kotlin.version}</version>
         </dependency>
     </dependencies>
-
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>

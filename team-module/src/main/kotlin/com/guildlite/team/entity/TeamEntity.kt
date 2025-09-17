@@ -19,13 +19,13 @@ data class TeamEntity(
     val version: Long = 0L,
 
     @Column(name = "created_by", nullable = false)
-    val createdBy: UUID,
+    val createdBy: UUID? = null,
 
     @Column(name = "name", nullable = false, length = 50)
-    val name: String,
+    val name: String? = null,
 
     @Column(name = "description", nullable = false, length = 150)
-    val description: String,
+    val description: String? = null,
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
@@ -38,5 +38,4 @@ data class TeamEntity(
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     val members: MutableSet<TeamUserEntity> = mutableSetOf()
 
-) {
-}
+)

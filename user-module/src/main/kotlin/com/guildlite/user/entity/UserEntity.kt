@@ -1,5 +1,6 @@
 package com.guildlite.user.entity
 
+import com.guildlite.team.entity.TeamUserEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -49,11 +50,9 @@ data class UserEntity(
     @Column(name = "last_login_at")
     var lastLoginAt: LocalDateTime? = null,
 
-    @Column(name = "current_team_id")
-    var currentTeamId: UUID? = null,
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var teamMembership: TeamUserEntity? = null
 
-    @Column(name = "team_joined_at")
-    var teamJoinedAt: LocalDateTime? = null
 ) {
 
     fun isActive(): Boolean = status == UserStatus.ACTIVE
@@ -64,9 +63,7 @@ data class UserEntity(
     }
 
     enum class UserStatus {
-        ACTIVE,
-        INACTIVE,
-        DELETED
+        ACTIVE
     }
 
     override fun equals(other: Any?): Boolean {
@@ -78,6 +75,12 @@ data class UserEntity(
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String {
-        return "UserEntity(id=$id, username='$username', email='$email', status=$status, createdAt=$createdAt, updatedAt=$updatedAt, lastLoginAt=$lastLoginAt, currentTeamId=$currentTeamId, teamJoinedAt=$teamJoinedAt)"
+        return "UserEntity(id=$id, " +
+                "username='$username', " +
+                "email='$email', " +
+                "status=$status, " +
+                "createdAt=$createdAt, " +
+                "updatedAt=$updatedAt, " +
+                "lastLoginAt=$lastLoginAt)"
     }
 }

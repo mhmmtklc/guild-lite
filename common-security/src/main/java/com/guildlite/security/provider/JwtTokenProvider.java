@@ -83,7 +83,7 @@ public class JwtTokenProvider {
         return UserPrincipal.builder()
                 .id(UUID.fromString(userId))
                 .username(username)
-                .teamId(UUID.fromString(teamId))
+                .teamId(teamId != null ? UUID.fromString(teamId) : null)
                 .build();
     }
 

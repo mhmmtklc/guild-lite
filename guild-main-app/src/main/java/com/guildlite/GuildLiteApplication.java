@@ -15,13 +15,16 @@ import java.util.Map;
 @ComponentScan(basePackages = {
         "com.guildlite.security",
         "com.guildlite.user",
+        "com.guildlite.team",
         "com.guildlite"
 })
 @EntityScan(basePackages = {
-        "com.guildlite.user.entity"
+        "com.guildlite.user.entity",
+        "com.guildlite.team.entity"
 })
 @EnableJpaRepositories(basePackages = {
-        "com.guildlite.user.repository"
+        "com.guildlite.user.repository",
+        "com.guildlite.team.repository",
 })
 public class GuildLiteApplication {
 

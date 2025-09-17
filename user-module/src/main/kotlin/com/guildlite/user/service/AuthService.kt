@@ -53,7 +53,7 @@ class AuthService(
         val userPrincipal = UserPrincipal.builder()
             .id(user.id)
             .username(user.username)
-            .teamId(null)
+            .teamId(user.teamMembership?.team?.id)
             .build()
 
         val token = jwtTokenProvider.generateToken(userPrincipal)
@@ -100,7 +100,7 @@ class AuthService(
         val userPrincipal = UserPrincipal.builder()
             .id(savedUser.id)
             .username(savedUser.username)
-            .teamId(savedUser.currentTeamId)
+            .teamId(null)
             .build()
 
         val token = jwtTokenProvider.generateToken(userPrincipal)
@@ -113,14 +113,6 @@ class AuthService(
             success = true,
             message = "Successful registration for user: ${savedUser.username}"
         )
-    }
-
-    fun validateToken(token: String): UserPrincipal? {
-        return if (jwtTokenProvider.validateToken(token)) {
-            jwtTokenProvider.getUserPrincipalFromToken(token)
-        } else {
-            null
-        }
     }
 
 }

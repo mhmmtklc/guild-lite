@@ -26,10 +26,15 @@
         <module>common-security</module>
         <module>guild-main-app</module>
         <module>user-module</module>
-<!--        <module>team-module</module>-->
-<!--        <module>coin-module</module>-->
-<!--        <module>chat-module</module>-->
+        <module>team-module</module>
     </modules>
+
+    <repositories>
+        <repository>
+            <id>mavenCentral</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -57,11 +62,11 @@
                 <artifactId>user-module</artifactId>
                 <version>${project.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.guildlite</groupId>-->
-<!--                <artifactId>team-module</artifactId>-->
-<!--                <version>${project.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>com.guildlite</groupId>
+                <artifactId>team-module</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 <!--            <dependency>-->
 <!--                <groupId>com.guildlite</groupId>-->
 <!--                <artifactId>coin-module</artifactId>-->

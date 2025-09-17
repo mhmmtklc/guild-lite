@@ -1,5 +1,8 @@
 package com.guildlite.team.service
 
+import com.guildlite.chat.dto.ChatMessage
+import com.guildlite.chat.dto.events.TeamEventsDTO
+import com.guildlite.chat.publisher.ChatEventPublisher
 import com.guildlite.coin.service.CoinService
 import com.guildlite.security.dto.UserPrincipal
 import com.guildlite.security.provider.JwtTokenProvider
@@ -18,7 +21,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional(readOnly = true)
@@ -27,6 +30,7 @@ class TeamService(
     private val teamUserRepository: TeamUserRepository,
     private val userRepository: UserRepository,
     private val coinService: CoinService,
+    private val chatEventPublisher: ChatEventPublisher,
     private val jwtTokenProvider: JwtTokenProvider
 ) {
 
@@ -109,6 +113,16 @@ class TeamService(
 
         logger.info("User {} joined team {} successfully", userId, teamId)
 
+        val teamEventDTO = TeamEventsDTO().apply {
+            this.type = ChatMessage.MessageType.TEAM_JOIN
+            this.username = user.username
+            this.teamId = teamId.toString()
+            this.userId = userId.toString()
+
+        }
+
+        chatEventPublisher.publishTeamEvents(teamEventDTO)
+
         return JoinTeamResponse(
             success = true,
             newToken = newToken,
@@ -176,6 +190,16 @@ class TeamService(
 
             else -> "Successfully left team '$teamName'"
         }
+
+        val teamEventDTO = TeamEventsDTO().apply {
+            this.type = ChatMessage.MessageType.TEAM_LEAVE
+            this.username = user.username
+            this.teamId = teamId.toString()
+            this.userId = userId.toString()
+
+        }
+
+        chatEventPublisher.publishTeamEvents(teamEventDTO)
 
         return mapOf(
             "success" to true,

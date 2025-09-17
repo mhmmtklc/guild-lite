@@ -27,6 +27,10 @@
             <groupId>com.guildlite</groupId>
             <artifactId>team-module</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.guildlite</groupId>
+            <artifactId>chat-module</artifactId>
+        </dependency>
 
 
         <dependency>
@@ -129,6 +133,7 @@
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
+                        <arg>-Xannotation-default-target=param-property</arg>
                     </args>
                     <compilerPlugins>
                         <plugin>spring</plugin>

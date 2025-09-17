@@ -1,5 +1,8 @@
 package com.guildlite.coin.service
 
+import com.guildlite.chat.dto.ChatMessage
+import com.guildlite.chat.dto.events.CoinEventsDTO
+import com.guildlite.chat.publisher.ChatEventPublisher
 import com.guildlite.coin.dto.request.AddCoinsRequest
 import com.guildlite.coin.dto.response.AddCoinsResponse
 import com.guildlite.coin.dto.response.CoinBalanceResponse
@@ -21,7 +24,8 @@ class CoinService(
     private val coinPoolRepository: CoinPoolRepository,
     private val coinTransactionRepository: CoinTransactionRepository,
     private val teamRepository: TeamRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val chatEventPublisher: ChatEventPublisher
 ) {
 
     private val logger = LoggerFactory.getLogger(CoinService::class.java)
@@ -52,6 +56,17 @@ class CoinService(
 
         logger.info("Added {} coins to team {}. Balance: {} -> {}",
             request.amount, teamId, oldBalance, coinPool.balance)
+
+        val coinEventDTO = CoinEventsDTO().apply {
+            this.type = ChatMessage.MessageType.COIN_ADD
+            this.username = user.username
+            this.teamId = teamId.toString()
+            this.userId = userId.toString()
+            this.amount = request.amount
+            this.newBalance = coinPool.balance
+        }
+
+        chatEventPublisher.publishCoinEvents(coinEventDTO)
 
         return AddCoinsResponse(
             success = true,

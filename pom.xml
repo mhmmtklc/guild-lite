@@ -28,6 +28,7 @@
         <module>user-module</module>
         <module>team-module</module>
         <module>coin-module</module>
+        <module>chat-module</module>
     </modules>
 
     <repositories>
@@ -73,11 +74,11 @@
                 <artifactId>coin-module</artifactId>
                 <version>${project.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.guildlite</groupId>-->
-<!--                <artifactId>chat-module</artifactId>-->
-<!--                <version>${project.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>com.guildlite</groupId>
+                <artifactId>chat-module</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

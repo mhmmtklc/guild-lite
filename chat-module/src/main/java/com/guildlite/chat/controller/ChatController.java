@@ -33,30 +33,4 @@ public class ChatController {
         List<ChatMessage> history = chatService.getChatHistory(String.valueOf(userPrincipal.getTeamId()), limit);
         return ResponseEntity.ok(history);
     }
-
-
-    @GetMapping("/stats")
-    public ResponseEntity<ChatService.ChatStats> getChatStats(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        if (userPrincipal.getTeamId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        ChatService.ChatStats stats = chatService.getTeamChatStats(String.valueOf(userPrincipal.getTeamId()));
-        return ResponseEntity.ok(stats);
-    }
-
-
-    @DeleteMapping("/history/clear")
-    public ResponseEntity<Void> clearChatHistory(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        if (userPrincipal.getTeamId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        chatService.clearTeamChatHistory(String.valueOf(userPrincipal.getTeamId()));
-        return ResponseEntity.ok().build();
-    }
 }

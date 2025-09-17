@@ -1,13 +1,11 @@
 package com.guildlite.user.service
 
+import com.guildlite.security.dto.UserPrincipal
+import com.guildlite.security.provider.JwtTokenProvider
 import com.guildlite.user.dto.request.LoginRequest
 import com.guildlite.user.dto.request.RegisterRequest
 import com.guildlite.user.dto.response.LoginResponse
 import com.guildlite.user.entity.UserEntity
-import com.guildlite.user.exception.InvalidCredentialsException
-import com.guildlite.user.exception.UserAlreadyExistsException
-import com.guildlite.security.dto.UserPrincipal
-import com.guildlite.security.provider.JwtTokenProvider
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -24,27 +22,33 @@ class AuthService(
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
 
 
+    @Transactional
     fun login(loginRequest: LoginRequest): LoginResponse {
         logger.info("Login attempt for: {}", loginRequest.usernameOrEmail)
 
         val user = userService.findByUsernameOrEmail(loginRequest.usernameOrEmail)
-            ?: throw InvalidCredentialsException("Invalid username/email or password")
-
-        if (user.id == null) {
-            throw InvalidCredentialsException("Invalid username/email or password")
-        }
+            ?: return LoginResponse(
+                success = false,
+                message = "Invalid username/email or password"
+            )
 
         if (!user.isActive()) {
-            throw InvalidCredentialsException("Account is not active")
+            return LoginResponse(
+                success = false,
+                message = "Account status is ${user.status}, please contact the administrator for activation'"
+            )
         }
 
         if (!passwordEncoder.matches(loginRequest.password, user.password)) {
             logger.warn("Invalid password attempt for user: {}", user.username)
-            throw InvalidCredentialsException("Invalid username/email or password")
+            return LoginResponse(
+                success = false,
+                message = "Invalid username/email or password"
+            )
         }
 
 
-        userService.updateLastLogin(user.id)
+        userService.updateLastLogin(user.id!!)
 
         val userPrincipal = UserPrincipal.builder()
             .id(user.id)
@@ -58,19 +62,28 @@ class AuthService(
 
         return LoginResponse(
             token = token,
-            user = userService.mapToUserResponse(user)
+            user = userService.mapToUserResponse(user),
+            success = true,
+            message = "Successful login for user: ${user.username}"
         )
     }
 
+    @Transactional
     fun register(registerRequest: RegisterRequest): LoginResponse {
         logger.info("Registration attempt for username: {}", registerRequest.username)
 
         if (userService.existsByUsername(registerRequest.username)) {
-            throw UserAlreadyExistsException("Username '${registerRequest.username}' is already taken")
+            return LoginResponse(
+                success = false,
+                message = "Username '${registerRequest.username}' is already taken"
+            )
         }
 
         if (userService.existsByEmail(registerRequest.email)) {
-            throw UserAlreadyExistsException("Email '${registerRequest.email}' is already registered")
+            return LoginResponse(
+                success = false,
+                message = "Email '${registerRequest.email}' is already registered"
+            )
         }
 
 
@@ -87,7 +100,7 @@ class AuthService(
         val userPrincipal = UserPrincipal.builder()
             .id(savedUser.id)
             .username(savedUser.username)
-            .teamId(null)
+            .teamId(savedUser.currentTeamId)
             .build()
 
         val token = jwtTokenProvider.generateToken(userPrincipal)
@@ -96,7 +109,9 @@ class AuthService(
 
         return LoginResponse(
             token = token,
-            user = userService.mapToUserResponse(savedUser)
+            user = userService.mapToUserResponse(savedUser),
+            success = true,
+            message = "Successful registration for user: ${savedUser.username}"
         )
     }
 

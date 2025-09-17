@@ -2,15 +2,15 @@ package com.guildlite.user.service
 
 import com.guildlite.user.dto.response.UserResponse
 import com.guildlite.user.entity.UserEntity
+import com.guildlite.user.exception.UserNotFoundException
 import com.guildlite.user.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 class UserService(
     private val userRepository: UserRepository
 ) {
@@ -26,9 +26,13 @@ class UserService(
     }
 
     @Transactional
-    fun updateLastLogin(userId: UUID) {
-        val loginTime = LocalDateTime.now()
-        userRepository.updateLastLoginAt(userId, loginTime)
+    fun updateLastLogin(userId: UUID?) {
+        if (userId == null) {
+            throw IllegalArgumentException("User ID cannot be null")
+        }
+
+        val user = userRepository.findById(userId).orElseThrow { UserNotFoundException("Invalid user ID: $userId") }
+        user.updateLastLogin()
         logger.debug("Updated last login for user: {}", userId)
     }
 

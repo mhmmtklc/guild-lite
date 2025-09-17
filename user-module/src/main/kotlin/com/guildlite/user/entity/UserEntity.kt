@@ -1,66 +1,83 @@
 package com.guildlite.user.entity
 
 import jakarta.persistence.*
-import jakarta.persistence.UniqueConstraint
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(
     name = "users",
     uniqueConstraints = [
         UniqueConstraint(columnNames = ["username"], name = "uk_users_username"),
-        UniqueConstraint(columnNames = ["username"], name = "uk_users_username")
+        UniqueConstraint(columnNames = ["email"], name = "uk_users_email")
     ]
 )
 data class UserEntity(
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
-    val id: UUID? = UUID.randomUUID(),
+    @Column(name = "id", updatable = false, nullable = false)
+    var id: UUID? = null,
 
-    @Column(name = "username", nullable = false, length = 30)
-    val username: String,
+    @Version
+    @Column(name = "version")
+    var version: Long = 0L,
 
-    @Column(name = "password", nullable = false)
-    val password: String,
+    @Column(name = "username", nullable = false, length = 50)
+    var username: String = "",
 
     @Column(name = "email", nullable = false, length = 100)
-    val email: String,
+    var email: String = "",
+
+    @Column(name = "password", nullable = false)
+    var password: String = "",
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    var status: UserStatus = UserStatus.ACTIVE,
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    val createdAt: LocalDateTime? = LocalDateTime.now(),
+    var createdAt: LocalDateTime? = null,
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    var updatedAt: LocalDateTime? = LocalDateTime.now(),
+    var updatedAt: LocalDateTime? = null,
 
     @Column(name = "last_login_at")
     var lastLoginAt: LocalDateTime? = null,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    val status: UserStatus = UserStatus.ACTIVE,
-) {
+    @Column(name = "current_team_id")
+    var currentTeamId: UUID? = null,
 
-    constructor() : this(
-        username = "",
-        password = "",
-        email = ""
-    )
+    @Column(name = "team_joined_at")
+    var teamJoinedAt: LocalDateTime? = null
+) {
 
     fun isActive(): Boolean = status == UserStatus.ACTIVE
 
-    fun updateLastLoginTime() {
+    fun updateLastLogin() {
         lastLoginAt = LocalDateTime.now()
         updatedAt = LocalDateTime.now()
     }
 
-
     enum class UserStatus {
-        ACTIVE, INACTIVE, DELETED
+        ACTIVE,
+        INACTIVE,
+        DELETED
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UserEntity) return false
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = id?.hashCode() ?: 0
+
+    override fun toString(): String {
+        return "UserEntity(id=$id, username='$username', email='$email', status=$status, createdAt=$createdAt, updatedAt=$updatedAt, lastLoginAt=$lastLoginAt, currentTeamId=$currentTeamId, teamJoinedAt=$teamJoinedAt)"
     }
 }

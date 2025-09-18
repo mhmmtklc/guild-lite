@@ -158,7 +158,7 @@ class TeamService(
                     teamUserRepository.save(promotedOwner)
 
                     logger.info(
-                        "User {} promoted to LEADER of team {} after owner {} left",
+                        "User {} promoted to OWNER of team {} after owner {} left",
                         newOwner.user.id, teamId, userId
                     )
                 }

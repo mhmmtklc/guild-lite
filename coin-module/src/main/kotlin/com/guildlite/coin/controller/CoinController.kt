@@ -5,6 +5,7 @@ import com.guildlite.coin.dto.response.AddCoinsResponse
 import com.guildlite.coin.dto.response.CoinBalanceResponse
 import com.guildlite.coin.service.CoinService
 import com.guildlite.security.dto.UserPrincipal
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -23,6 +24,10 @@ class CoinController(
 ) {
 
 
+    @Operation(
+        summary = "Add Coins",
+        description = "Add coins to team pool and broadcast coin event to team chat"
+    )
     @PostMapping("/{teamId}/add")
     fun addCoins(
         @PathVariable teamId: UUID, @Valid @RequestBody request: AddCoinsRequest,
@@ -42,6 +47,10 @@ class CoinController(
     }
 
 
+    @Operation(
+        summary = "Get Coin Balance",
+        description = "Retrieve current coin balance for team"
+    )
     @GetMapping("/{teamId}/get-balance")
     fun getCoinBalance(
         @PathVariable teamId: UUID,

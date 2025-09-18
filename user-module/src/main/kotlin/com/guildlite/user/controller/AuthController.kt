@@ -4,6 +4,7 @@ import com.guildlite.user.dto.request.LoginRequest
 import com.guildlite.user.dto.request.RegisterRequest
 import com.guildlite.user.dto.response.LoginResponse
 import com.guildlite.user.service.AuthService
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
@@ -24,6 +25,10 @@ class AuthController(
     private val logger = LoggerFactory.getLogger(AuthController::class.java)
 
 
+    @Operation(
+        summary = "User Login",
+        description = "Authenticate user and return JWT token"
+    )
     @PostMapping("/login")
     fun login(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
         logger.info("Login request received for: {}", loginRequest.usernameOrEmail)
@@ -32,6 +37,10 @@ class AuthController(
     }
 
 
+    @Operation(
+        summary = "User Registration",
+        description = "Register new user and return JWT token"
+    )
     @PostMapping("/register")
     fun register(@Valid @RequestBody registerRequest: RegisterRequest): ResponseEntity<LoginResponse> {
         logger.info("Registration request received for username: {}", registerRequest.username)

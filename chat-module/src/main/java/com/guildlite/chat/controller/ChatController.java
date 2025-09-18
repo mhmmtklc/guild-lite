@@ -3,6 +3,7 @@ package com.guildlite.chat.controller;
 import com.guildlite.chat.dto.ChatMessage;
 import com.guildlite.chat.service.ChatService;
 import com.guildlite.security.dto.UserPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,11 @@ public class ChatController {
         this.chatService = chatService;
     }
 
+
+    @Operation(
+            summary = "Get Chat History",
+            description = "Retrieve team chat message history with optional limit"
+    )
     @GetMapping("/history")
     public ResponseEntity<List<ChatMessage>> getChatHistory(
             @AuthenticationPrincipal UserPrincipal userPrincipal,

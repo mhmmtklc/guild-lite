@@ -64,8 +64,17 @@ class TeamController(
         summary = "Leave Team",
         description = "Leave current team and broadcast leave event to team chat"
     )
-    @DeleteMapping("/leave")
+    //@DeleteMapping("/leave")
     fun leaveTeam(@AuthenticationPrincipal userPrincipal: UserPrincipal): ResponseEntity<Map<String, Any>> {
+        if (userPrincipal.teamId == null) {
+            val map = mapOf(
+                "success" to true,
+                "message" to "You are not in a team",
+            )
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map)
+        }
+
         val result = teamService.leaveTeam(userPrincipal.id)
         return ResponseEntity.ok(result)
     }

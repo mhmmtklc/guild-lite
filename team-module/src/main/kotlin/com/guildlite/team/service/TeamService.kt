@@ -185,7 +185,7 @@ class TeamService(
             isOwner && remainingMembers > 0 -> {
                 val newOwnerName = teamUserRepository.findByTeamId(teamId)
                     .find { it.role == TeamUserEntity.TeamRole.OWNER }?.user?.username
-                "Successfully left team '$teamName'. Leadership transferred to $newOwnerName."
+                "Successfully left team '$teamName'. Ownership transferred to $newOwnerName."
             }
 
             else -> "Successfully left team '$teamName'"

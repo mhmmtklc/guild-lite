@@ -35,7 +35,7 @@ data class TeamEntity(
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null,
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val members: MutableSet<TeamUserEntity> = mutableSetOf()
 
 )

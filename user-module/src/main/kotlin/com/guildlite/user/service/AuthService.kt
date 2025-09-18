@@ -53,7 +53,7 @@ class AuthService(
         val userPrincipal = UserPrincipal.builder()
             .id(user.id)
             .username(user.username)
-            .teamId(user.teamMembership?.team?.id)
+            .teamId(user.teamId)
             .build()
 
         val token = jwtTokenProvider.generateToken(userPrincipal)

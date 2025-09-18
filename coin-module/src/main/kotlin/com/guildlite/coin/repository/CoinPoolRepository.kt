@@ -10,10 +10,10 @@ import java.util.*
 @Repository
 interface CoinPoolRepository : JpaRepository<CoinPoolEntity, UUID> {
 
-    @Query("SELECT cp FROM CoinPoolEntity cp WHERE cp.team.id = :teamId")
+    @Query("SELECT cp FROM CoinPoolEntity cp WHERE cp.teamId = :teamId")
     fun findByTeamId(@Param("teamId") teamId: UUID): CoinPoolEntity?
 
-    @Query("SELECT cp.balance FROM CoinPoolEntity cp WHERE cp.team.id = :teamId")
+    @Query("SELECT cp.balance FROM CoinPoolEntity cp WHERE cp.teamId = :teamId")
     fun getTeamCoinBalance(@Param("teamId") teamId: UUID): Long?
 
 }

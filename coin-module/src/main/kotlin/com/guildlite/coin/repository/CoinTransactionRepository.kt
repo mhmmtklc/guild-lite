@@ -10,6 +10,6 @@ import java.util.*
 @Repository
 interface CoinTransactionRepository : JpaRepository<CoinTransactionEntity, UUID> {
 
-    @Query(value = "SELECT SUM(ct.amount) FROM CoinTransactionEntity ct WHERE ct.user.id = :userId AND ct.coinPool.team.id = :teamId")
+    @Query(value = "SELECT SUM(ct.amount) FROM CoinTransactionEntity ct WHERE ct.user.id = :userId AND ct.coinPool.teamId = :teamId")
     fun getTeamCoinCountAddedByMember(@Param("userId") userId: UUID, @Param("teamId") teamId: UUID): Long?
 }

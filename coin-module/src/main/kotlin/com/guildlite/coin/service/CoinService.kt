@@ -10,8 +10,6 @@ import com.guildlite.coin.entity.CoinPoolEntity
 import com.guildlite.coin.entity.CoinTransactionEntity
 import com.guildlite.coin.repository.CoinPoolRepository
 import com.guildlite.coin.repository.CoinTransactionRepository
-import com.guildlite.team.entity.TeamEntity
-import com.guildlite.team.repository.TeamRepository
 import com.guildlite.user.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -23,7 +21,6 @@ import java.util.*
 class CoinService(
     private val coinPoolRepository: CoinPoolRepository,
     private val coinTransactionRepository: CoinTransactionRepository,
-    private val teamRepository: TeamRepository,
     private val userRepository: UserRepository,
     private val chatEventPublisher: ChatEventPublisher
 ) {
@@ -34,11 +31,10 @@ class CoinService(
     fun addCoins(teamId: UUID, request: AddCoinsRequest, userId: UUID): AddCoinsResponse {
         logger.info("Adding {} coins to team {} by user {}", request.amount, teamId, userId)
 
-        val team = findTeamById(teamId)
         val user = findUserById(userId)
 
         val coinPool = coinPoolRepository.findByTeamId(teamId)
-            ?: createCoinPool(team)
+            ?: createCoinPool(teamId)
 
         val oldBalance = coinPool.balance
 
@@ -77,12 +73,10 @@ class CoinService(
     }
 
     fun getCoinBalance(teamId: UUID): CoinBalanceResponse {
-        val team = findTeamById(teamId)
         val coinPool = coinPoolRepository.findByTeamId(teamId)
 
         return CoinBalanceResponse(
             teamId = teamId,
-            teamName = team.name,
             balance = coinPool?.balance ?: 0L,
             lastUpdated = coinPool?.updatedAt,
             success = true,
@@ -91,22 +85,17 @@ class CoinService(
     }
 
     @Transactional
-    fun initializeCoinPool(team: TeamEntity): CoinPoolEntity {
-        logger.info("Initializing coin pool for team {}", team.id)
+    fun initializeCoinPool(teamId: UUID): CoinPoolEntity {
+        logger.info("Initializing coin pool for team {}", teamId)
 
-        val coinPool = CoinPoolEntity(team = team)
+        val coinPool = CoinPoolEntity(teamId = teamId)
         return coinPoolRepository.save(coinPool)
     }
 
-    private fun createCoinPool(team: TeamEntity): CoinPoolEntity {
-        logger.info("Creating new coin pool for team {}", team.id)
-        val coinPool = CoinPoolEntity(team = team)
+    private fun createCoinPool(teamId: UUID): CoinPoolEntity {
+        logger.info("Creating new coin pool for team {}", teamId)
+        val coinPool = CoinPoolEntity(teamId = teamId)
         return coinPoolRepository.save(coinPool)
-    }
-
-    private fun findTeamById(teamId: UUID): TeamEntity {
-        return teamRepository.findById(teamId)
-            .orElseThrow { NoSuchElementException("Team not found: $teamId") }
     }
 
     private fun findUserById(userId: UUID): com.guildlite.user.entity.UserEntity {

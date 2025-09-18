@@ -25,10 +25,6 @@
         </dependency>
         <dependency>
             <groupId>com.guildlite</groupId>
-            <artifactId>user-module</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.guildlite</groupId>
             <artifactId>coin-module</artifactId>
         </dependency>
         <dependency>

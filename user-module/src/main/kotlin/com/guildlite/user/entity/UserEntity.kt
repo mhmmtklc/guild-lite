@@ -1,6 +1,5 @@
 package com.guildlite.user.entity
 
-import com.guildlite.team.entity.TeamUserEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -50,8 +49,8 @@ data class UserEntity(
     @Column(name = "last_login_at")
     var lastLoginAt: LocalDateTime? = null,
 
-    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var teamMembership: TeamUserEntity? = null
+    @Column(name = "team_id")
+    var teamId: UUID? = null
 
 ) {
 

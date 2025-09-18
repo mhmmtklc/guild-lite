@@ -29,10 +29,6 @@
         </dependency>
         <dependency>
             <groupId>com.guildlite</groupId>
-            <artifactId>team-module</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.guildlite</groupId>
             <artifactId>chat-module</artifactId>
         </dependency>
 

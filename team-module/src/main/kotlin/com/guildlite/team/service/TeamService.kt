@@ -48,7 +48,7 @@ class TeamService(
             )
         }
 
-        val user = userRepository.findById(userId).orElse(null) ?: return CreateTeamResponse(
+        var user = userRepository.findById(userId).orElse(null) ?: return CreateTeamResponse(
             success = false,
             message = "User not found."
         )
@@ -62,7 +62,7 @@ class TeamService(
 
         team = teamRepository.save(team)
 
-        coinService.initializeCoinPool(team)
+        coinService.initializeCoinPool(team.id!!)
 
         val teamUser = TeamUserEntity(
             team = team,
@@ -72,6 +72,9 @@ class TeamService(
         )
 
         teamUserRepository.save(teamUser)
+
+        user.teamId = team.id
+        user = userRepository.save(user)
 
         logger.info("Team created successfully: {} by user: {}", team.id, user.id)
 
@@ -98,7 +101,7 @@ class TeamService(
         }
 
         val team = findById(teamId)
-        val user = findUserById(userId)
+        var user = findUserById(userId)
         val currentMembers = teamRepository.countTeamEntitiesById(teamId)
 
         val teamUser = TeamUserEntity(
@@ -108,6 +111,9 @@ class TeamService(
         )
 
         teamUserRepository.save(teamUser)
+
+        user.teamId = team.id
+        user = userRepository.save(user)
 
         val newToken = generateTokenAfterTeamAction(user, teamId)
 
@@ -177,7 +183,10 @@ class TeamService(
             logger.info("Team {} deleted - no members remaining", teamId)
         }
 
-        val user = findUserById(userId)
+        var user = findUserById(userId)
+        user.teamId = null
+        user = userRepository.save(user)
+
         val newToken = generateTokenAfterTeamAction(user, null)
 
         val message = when {

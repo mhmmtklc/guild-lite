@@ -63,17 +63,32 @@ ws://localhost:8080/ws/chat?token=YOUR_JWT_TOKEN
 
 ## Quick Start
 
+> Note: You can use either your local Maven (`mvn`) or the Maven Wrapper (`./mvnw` on Linux/macOS, `.\mvnw` on Windows) to run the commands.
+
 ### Development (H2 Database)
+
 ```bash
-mvn clean install
-cd guild-main-app
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+# Windows (using Maven Wrapper)
+.\mvnw clean install
+.\mvnw spring-boot:run "-Dspring-boot.run.profiles=dev" -pl guild-main-app
+
+
+# Linux / macOS (using Maven Wrapper)
+./mvnw clean install
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev -pl guild-main-app
 ```
 
 ### Production (PostgreSQL)
+
 ```bash
-mvn clean package
-java -jar guild-main-app/target/guild-main-app-1.0.0.jar --spring.profiles.active=prod
+# Windows
+.\mvnw clean package
+java -jar guild-main-app/target/guild-main-app-1.0.0-SNAPSHOT.jar --spring.profiles.active=prod
+
+
+# Linux / macOS
+./mvnw clean package
+java -jar guild-main-app/target/guild-main-app-1.0.0-SNAPSHOT.jar --spring.profiles.active=prod
 ```
 
 ## Database Configuration
